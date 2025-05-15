@@ -1,31 +1,34 @@
-const scriptURL = 'https://script.google.com/macros/library/d/1cZhms190fg8NzysI5EY_EdO7_ONxa7YG_8iyCWuwsn-UTFkm1fyTArKz/5';
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('clienteForm');
 
-const form = document.getElementById('formulario');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-form.addEventListener('submit', e => {
-  e.preventDefault();
+    const data = {
+      nombre: document.getElementById('nombre').value,
+      celular: document.getElementById('celular').value,
+      correo: document.getElementById('correo').value,
+      nacimiento: document.getElementById('nacimiento').value
+    };
 
-  const data = {
-    nombre: document.getElementById('nombre').value,
-    celular: document.getElementById('celular').value,
-    correo: document.getElementById('correo').value,
-    nacimiento: document.getElementById('nacimiento').value
-  };
-
-  fetch(scriptURL, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => {
-    if (response.ok) {
-      alert('Cliente guardado exitosamente');
-      form.reset();
-    } else {
-      alert('Error al guardar el cliente');
-    }
-  })
-  .catch(error => alert('Error: ' + error.message));
+    fetch('https://script.google.com/macros/s/AKfycbzElEGKeoPskyvOVvsHAkEvpZ6zaRyZUXPMYTN4k8Jz1-a_5uDVAwUVwQvDqBgCP3lC/exec', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(result => {
+        if (result.status === 'success') {
+          alert('Cliente registrado correctamente');
+          form.reset();
+        } else {
+          alert('Error en el registro: ' + result.message);
+        }
+      })
+      .catch(error => {
+        alert('Error de red: ' + error);
+      });
+  });
 });
